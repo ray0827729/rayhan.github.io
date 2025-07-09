@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ray Han - Personal Page</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Montserrat and Cinzel -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Custom font and premium background */
+        body {
+            font-family: 'Montserrat', sans-serif; /* Body font */
+            background: linear-gradient(135deg, #2c3e50, #4a69bd); /* Deep blue-gray to light blue gradient */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem; /* Padding for mobile devices */
+            overflow: hidden; /* Prevent body scroll due to animations */
+        }
+
+        /* Entry animation */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .animate-fadeInScale {
+            animation: fadeInScale 0.8s ease-out forwards;
+            animation-delay: 0.2s; /* Starts with a slight delay after loading */
+            opacity: 0; /* Hidden before animation starts */
+        }
+
+        /* Slider specific styles */
+        .slider-container {
+            position: relative;
+            height: 64px; /* py-4 px-6 roughly equals this height */
+            border-radius: 1rem; /* rounded-xl */
+            overflow: hidden; /* Hide overflowing handle */
+            cursor: grab;
+            user-select: none; /* Prevent text selection during drag */
+            touch-action: pan-y; /* Allow vertical scrolling, prevent horizontal */
+        }
+
+        .slider-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 8px; /* Initial offset from the left edge */
+            transform: translateY(-50%);
+            width: 48px; /* Size of the handle */
+            height: 48px; /* Size of the handle */
+            background-color: rgba(255, 255, 255, 0.9); /* White with some transparency */
+            border-radius: 50%; /* Make it round */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: left 0.1s linear, background-color 0.3s ease;
+            cursor: grab;
+            z-index: 10; /* Ensure handle is above track */
+        }
+
+        .slider-handle.active {
+            cursor: grabbing;
+        }
+
+        .slider-icon {
+            font-size: 2rem; /* Size of the icon inside the handle */
+            color: currentColor; /* Inherit color from parent (handle) */
+            line-height: 1; /* Ensure icon is vertically centered */
+        }
+
+        .slider-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            pointer-events: none; /* Allow clicks to pass through to handle */
+            transition: opacity 0.3s ease;
+            z-index: 5; /* Below handle */
+        }
+
+        /* Specific style for the name to use Cinzel font */
+        .name-font {
+            font-family: 'Cinzel', serif;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="bg-gradient-to-br from-amber-300 via-amber-400 to-amber-500 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center transform animate-fadeInScale
+                border border-amber-200 hover:shadow-3xl transition-shadow duration-300 ease-in-out">
+        <!-- Profile Picture - Using the uploaded image. If it doesn't display, the Canvas environment might not be processing the `uploaded:` reference correctly. -->
+        <img src="data:image/jpeg;base64,{{uploaded:image.png-ae9e789f-40a6-43ff-b70d-76274c8e877e}}" alt="Ray Han Profile"
+             class="rounded-full mx-auto mb-6 border-4 border-blue-500 shadow-xl transition-transform duration-300 ease-in-out hover:scale-105 w-32 h-32 object-cover">
+
+        <!-- Name - Updated with Cinzel font -->
+        <h1 class="text-5xl font-extrabold text-gray-900 mb-4 tracking-tight name-font">Ray Han</h1>
+
+        <!-- Short Bio/Tagline (optional) -->
+        <p class="text-xl text-gray-800 mb-8 leading-relaxed">Welcome to my personal page!</p>
+
+        <!-- Social Media Links -->
+        <div class="space-y-4">
+            <!-- Facebook Slider -->
+            <div id="facebookSlider" class="slider-container bg-[#3b5998] hover:bg-[#2d4373] shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#3b5998]">
+                <div class="slider-track">
+                    <span class="slider-text">Slide to Facebook</span>
+                </div>
+                <div class="slider-handle text-[#3b5998]">
+                    <span class="slider-icon font-extrabold leading-none">f</span>
+                </div>
+            </div>
+
+            <!-- TikTok Slider -->
+            <div id="tiktokSlider" class="slider-container bg-[#000000] hover:bg-[#333333] shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#000000]">
+                <div class="slider-track">
+                    <span class="slider-text">Slide to TikTok</span>
+                </div>
+                <div class="slider-handle text-[#000000]">
+                    <span class="slider-icon font-extrabold leading-none">🎵</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional: Footer -->
+        <p class="text-sm text-gray-700 mt-10">
+            &copy; 2025 Ray Han. All rights reserved.
+        </p>
+    </div>
+
+    <script>
+        function setupSlider(sliderId, targetUrl) {
+            const slider = document.getElementById(sliderId);
+            const handle = slider.querySelector('.slider-handle');
+            const sliderText = slider.querySelector('.slider-text');
+            let isDragging = false;
+            let startX;
+            let handleOffset = 0;
+            const handleWidth = handle.offsetWidth;
+            const padding = 8; // Corresponds to left: 8px in CSS
+
+            function getClientX(event) {
+                return event.touches ? event.touches[0].clientX : event.clientX;
+            }
+
+            function startDrag(event) {
+                isDragging = true;
+                handle.classList.add('active');
+                startX = getClientX(event) - handle.getBoundingClientRect().left;
+                slider.style.cursor = 'grabbing';
+                sliderText.style.opacity = '0'; // Hide text when dragging starts
+            }
+
+            function drag(event) {
+                if (!isDragging) return;
+                event.preventDefault(); // Prevent scrolling on touch devices
+                const currentX = getClientX(event);
+                let newLeft = currentX - slider.getBoundingClientRect().left - startX;
+
+                // Constrain the handle within the slider track
+                const maxLeft = slider.offsetWidth - handleWidth - padding;
+                newLeft = Math.max(padding, Math.min(newLeft, maxLeft));
+
+                handle.style.left = `${newLeft}px`;
+                handleOffset = newLeft - padding; // Calculate actual movement from start
+
+                // Optional: Change handle color based on progress
+                const progress = handleOffset / maxLeft;
+                if (progress > 0.7) { // Change color when nearing completion
+                    handle.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+                } else {
+                    handle.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                }
+            }
+
+            function endDrag() {
+                isDragging = false;
+                handle.classList.remove('active');
+                slider.style.cursor = 'grab';
+                sliderText.style.opacity = '1'; // Show text when dragging ends
+
+                const sliderTrackWidth = slider.offsetWidth - (padding * 2) - handleWidth;
+                const currentHandlePosition = parseFloat(handle.style.left) - padding;
+
+                // Check if slid far enough (e.g., 80% of the track)
+                if (currentHandlePosition / sliderTrackWidth > 0.80) {
+                    window.open(targetUrl, '_blank');
+                    // Reset slider after successful navigation
+                    setTimeout(() => {
+                        handle.style.left = `${padding}px`;
+                        handleOffset = 0;
+                        handle.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                    }, 500); // Small delay before resetting
+                } else {
+                    // Snap back if not slid far enough
+                    handle.style.left = `${padding}px`;
+                    handleOffset = 0;
+                    handle.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                }
+            }
+
+            // Mouse events
+            handle.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+
+            // Touch events for mobile
+            handle.addEventListener('touchstart', startDrag, { passive: false }); // passive: false to allow preventDefault
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('touchend', endDrag);
+            document.addEventListener('touchcancel', endDrag); // Handle cases where touch is interrupted
+        }
+
+        // Initialize sliders on window load
+        window.onload = function() {
+            setupSlider('facebookSlider', 'https://www.facebook.com/share/1S2vyWfxcW/');
+            setupSlider('tiktokSlider', 'https://www.tiktok.com/@rayhan91730?_t=ZS-8xrTXMuXnqp&_r=1');
+        };
+    </script>
+</body>
+</html>
